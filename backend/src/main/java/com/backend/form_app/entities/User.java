@@ -8,8 +8,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
-@AllArgsConstructor
 @Getter
 @Document(collection = "users")
 public class User {
@@ -18,7 +18,15 @@ public class User {
     private String id;
 
     private String login;
+    private String email;
     private String password;
-    private String[] roles;
+    private List<String> roles;
+
+    public User(String login, String email, String password, List<String> roles) {
+        this.login = login;
+        this.email = email;
+        this.password = password;
+        this.roles = roles;
+    }
 
 }

@@ -29,8 +29,14 @@ public class UserController {
         return ("Hello " + credentials);
     }
 
+    @GetMapping("/form/{id}")
+    public String getFormById(int id) {
+        return null;
+    }
+
     @GetMapping("/get_by_title")
     public String getByTitle() {
         return Arrays.toString(formRepository.findAllByTitle("Very cool form").toArray());
     }
+
 }

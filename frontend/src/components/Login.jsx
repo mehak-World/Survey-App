@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import axios from 'axios';
 import {setAuthHeader} from '../utils/BackendUtils';
+import { serverUrl } from '../utils/BackendUtils';
 
 const Login = () => {
     const [isSignUpForm, setIsSignUpForm] = useState(true);
@@ -10,11 +11,12 @@ const Login = () => {
     }
 
     const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     function requestLogin(e) {
       e.preventDefault()
-      axios.post('http://localhost:8080/login', {
+      axios.post(serverUrl + 'login', {
         'login': username,
         'password': password
         /*
@@ -41,14 +43,39 @@ const Login = () => {
       return
     }
 
+    function requestSignup(e) {
+      console.log("Sending signup")
+      e.preventDefault()
+      axios.post(serverUrl + 'signup', {
+        'login': username,
+        'email': email,
+        'password': password
+        /*
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({'login': username, 'password': password})
+        */
+          
+      }).then(response => {
+        console.log(response)
+        if (response.status == 200) {
+            // TODO: Handle success
+            return;
+
+        } else {
+            // TODO: Handle error
+            return;
+        }
+      })
+    }
+
   return (
     <div>
-        <form className = "w-50 mx-auto" style = {{marginTop: "5%"}} onSubmit={requestLogin}>
+        <form className = "w-50 mx-auto" style = {{marginTop: "5%"}} onSubmit={(e) => isSignUpForm ? requestSignup(e) : requestLogin(e)}>
             <h4>{isSignUpForm ? "Create account" : "Login"}</h4>
             <br />
         {isSignUpForm && <div class="mb-3">
   <label for="email" class="form-label">Email address</label>
-  <input type="email" class="form-control" id="email" placeholder="name@example.com" name = "email" />
+  <input type="email" class="form-control" id="email" placeholder="name@example.com" name = "email" onChange={(e) => setEmail(e.target.value)} />
 </div>}
 <div class="mb-3">
   <label for="username" class="form-label" >{isSignUpForm ? "Username": "Username or email"}</label>

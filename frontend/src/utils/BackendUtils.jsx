@@ -1,3 +1,5 @@
+export const serverUrl = "http://localhost:8080/"
+
 export const getAuthToken = () => {
     return "Bearer " + window.localStorage.getItem('auth_token');
 };
