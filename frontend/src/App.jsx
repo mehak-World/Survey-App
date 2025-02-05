@@ -1,26 +1,26 @@
 import React from 'react'
-import Home from './components/Home'
-import Header from "./components/Header"
-import {BrowserRouter, Route, Routes} from "react-router-dom"
-import Login from './components/Login'
-import Dashboard from './components/Dashboard'
-import SurveyBuilder from './components/SurveyBuilder'
+import {BrowserRouter, Routes, Route} from "react-router-dom";
+import Login from './components/Login';
+import Dashboard from './components/Dashboard';
+import CreateForm from './components/CreateForm';
+import EditForm from './components/EditForm';
+import Header from './components/Header';
+import ResponseForm from './components/ResponseForm';
 
 const App = () => {
   return (
-    <>
-    <Header />
-    <BrowserRouter>
+    <div>
+      <BrowserRouter>
+      <Header />
       <Routes>
-        <Route path = "/" element = {<Home />} />
-        <Route path = "/surveys" element = {<Dashboard />} />
         <Route path = "/login" element = {<Login />} />
-        <Route path = "/create" element = {<SurveyBuilder />} />
+        <Route path = "/" element = {<Dashboard />} />
+        <Route path = "/create" element = {<CreateForm />} />
+        <Route path = "/edit/:id" element = {<EditForm/>} />
+        <Route path = "/fillForm/:id" element = {<ResponseForm />} />
       </Routes>
-    </BrowserRouter>
-    </>
-    
-  
+      </BrowserRouter>
+    </div>
   )
 }
 
