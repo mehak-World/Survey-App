@@ -53,6 +53,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     log.error("Filter runtime exception: " + e);
                     SecurityContextHolder.clearContext();
                     //throw e;
+
                 }
             }
         }

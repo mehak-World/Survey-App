@@ -41,7 +41,7 @@ const Header = () => {
         {/* Profile Button */}
         <div style={styles.profileButton}>
           {/* Example: Using user initials */}
-          <span style={styles.profileInitials}>{username[0].toUpperCase()}</span>
+          <span style={styles.profileInitials}>{"R" /* username[0].toUpperCase() */}</span>
         </div>
       </div>
     </div>

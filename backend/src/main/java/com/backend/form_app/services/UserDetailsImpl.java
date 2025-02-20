@@ -2,6 +2,7 @@ package com.backend.form_app.services;
 
 import com.backend.form_app.entities.User;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class UserDetailsImpl implements UserDetails {
 
+    @Getter
     private String id;
 
     private String login;

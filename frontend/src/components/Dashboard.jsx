@@ -5,6 +5,7 @@ import createImg from "../assets/images/forms-blank-googlecolors.png";
 import surveyImg from "../assets/images/t-shirt.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { getAuthToken, serverUrl } from "../utils/BackendUtils";
 
 const Dashboard = () => {
   const [forms, setForms] = useState([]);
@@ -14,7 +15,11 @@ const Dashboard = () => {
 
   useEffect(() => {
     const getForms = async () => {
-      const response = await axios.get("http://localhost:3000/forms");
+      const response = await axios.get(serverUrl + "getuserforms", {
+        'headers': {
+          'Authorization': getAuthToken()
+        }
+      });
       if (response) {
         setForms(response.data);
       }
@@ -41,7 +46,11 @@ const Dashboard = () => {
 
   const handleDelete = async () => {
     console.log(`Delete survey with ID: ${selectedSurvey}`);
-    const response = await axios.post("http://localhost:3000/forms/" + selectedSurvey + "/delete");
+    const response = await axios.delete(serverUrl + "deleteform/" + selectedSurvey, {
+      'headers': {
+        'Authorization': getAuthToken()
+      }
+    });
     if(response){
       setForms(forms.filter((survey) => survey._id !== selectedSurvey));
     }

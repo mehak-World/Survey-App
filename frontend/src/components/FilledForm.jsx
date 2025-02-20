@@ -18,10 +18,10 @@ const FilledForm = ({ response }) => {
       {/* Display Questions */}
       {response.answers.map((result) => (
         <Box key={result._id} sx={{ mb: 4 }}>
-          <Typography variant="h6">{result.questionId.title}</Typography>
+          <Typography variant="h6">{result.question.title}</Typography>
 
           {/* Text Input */}
-          {result.questionId.type === "text" && (
+          {result.question.type === "TEXT" && (
             <Box>
               <TextField
                 variant="outlined"
@@ -33,9 +33,9 @@ const FilledForm = ({ response }) => {
           )}
 
           {/* MCQ */}
-          {result.questionId.type === "mcq" && (
+          {result.question.type === "MULTIPLE_CHOICE" && (
             <Box>
-              {result.questionId.options.map((option, index) => (
+              {result.question.options.map((option, index) => (
                 <Box key={index}>
                   <FormControlLabel
                     control={
@@ -52,12 +52,12 @@ const FilledForm = ({ response }) => {
           )}
 
           {/* Rating */}
-          {result.questionId.type === "rating" && (
+          {result.question.type === "RATING" && (
             <Rating value={result.response} disabled sx={{ color: "#FFD700" }} />
           )}
 
           {/* Date */}
-          {result.questionId.type === "date" && (
+          {result.question.type === "DATE" && (
             <Box sx={{ mt: 2 }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker

@@ -53,7 +53,7 @@ public class JwtService {
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         log.info("Found user details: " + userDetails);
 
-        return new UsernamePasswordAuthenticationToken(username,
+        return new UsernamePasswordAuthenticationToken(userDetails,//username,
                         null,
                         userDetails.getAuthorities()
         );

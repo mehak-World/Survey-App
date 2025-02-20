@@ -34,7 +34,7 @@ public class WebSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests((requests) -> requests
-                        .requestMatchers("/user/home", "/login", "/signup").permitAll()
+                        .requestMatchers("/login", "/signup", "/form/**", "/response/**").permitAll()
                         .anyRequest().authenticated())
                 //.formLogin(Customizer.withDefaults())
                 //.formLogin((form) -> form
@@ -58,7 +58,11 @@ public class WebSecurityConfig {
         configuration.setAllowedMethods(Arrays.asList(
                 HttpMethod.GET.name(),
                 HttpMethod.POST.name(),
-                HttpMethod.OPTIONS.name()));
+                HttpMethod.OPTIONS.name(),
+                HttpMethod.DELETE.name(),
+                HttpMethod.PATCH.name()
+                )
+        );
         configuration.setAllowedHeaders(Arrays.asList(
                 HttpHeaders.AUTHORIZATION,
                 HttpHeaders.CONTENT_TYPE));

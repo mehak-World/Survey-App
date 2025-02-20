@@ -24,12 +24,15 @@ import { AddPhotoAlternate } from "@mui/icons-material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { handleAddOption, handleAddQuestion, handleEditOption, handleEditTitle, handleRemoveOption, handleRemoveQuestion, handleToggleMultipleSelect, handleToggleRequired } from "../utils/questionUtils";
+import { handleAddOption, handleAddQuestion, handleEditOption, handleEditTitle, handleRemoveOption, handleRemoveQuestion,
+  handleToggleMultipleSelect, handleToggleRequired, convertToQuestion, 
+  convertAllToQuestionDtos} from "../utils/questionUtils";
 import Preview from "./Preview";
 import { handleImageChange } from "../utils/imageUtils";
 import { useNavigate, useParams } from "react-router-dom";
 import ViewResponse from "./ViewResponse";
 import FilledFormAnalysis from "./FilledFormAnalysis";
+import { getAuthToken, serverUrl } from '../utils/BackendUtils';
 
 const EditForm = () => {
   const { id } = useParams();
@@ -49,21 +52,27 @@ const EditForm = () => {
   useEffect(() => {
     const getForm = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/forms/${id}`);
+        const response = await axios.get(serverUrl + `forms/${id}`, {
+          'headers': {
+            'Authorization': getAuthToken()
+          }
+        });
         const formData = response.data;
         setForm(formData);
         setFormTitle(formData.title || "");
         setFormDescription(formData.description || "");
         setQuestions(
-          formData.questions.map((ques) => ({
-            id: ques._id,
-            type: ques.type,
-            title: ques.title,
-            required: ques.isRequired,
-            multipleSelect: ques.isMultiple,
-            options: ques.options || [],
-            images: ques.images || [],
-          }))
+          convertToQuestion(
+            formData.questions.map((ques) => ({
+              id: ques._id,
+              type: ques.type,
+              title: ques.title,
+              required: ques.required,
+              multipleSelect: ques.multipleSelect,
+              options: ques.options || [],
+              images: ques.images || [],
+            }))
+          )
         );
       } catch (error) {
         console.error("Error fetching form:", error);
@@ -81,10 +90,16 @@ const EditForm = () => {
   };
 
   const saveForm = async () => {
-    const response = await axios.post("http://localhost:3000/forms/" + id, {
+    const questionsDto = convertAllToQuestionDtos(questions)
+
+    const response = await axios.patch(serverUrl + "updateform/" + id, {
       title: formTitle,
       description: formDescription,
-      questions: questions,
+      questions: questionsDto,
+    }, {
+      'headers': {
+        'Authorization': getAuthToken()
+      }
     });
     if (response) {
       console.log(response);
@@ -155,8 +170,8 @@ const EditForm = () => {
                 <Button
                   variant="contained"
                   fullWidth
-                  sx={{ bgcolor: getButtonColor("text") }}
-                  onClick={() => setSelectedType("text")}
+                  sx={{ bgcolor: getButtonColor("TEXT") }}
+                  onClick={() => setSelectedType("TEXT")}
                 >
                   Text
                 </Button>
@@ -165,8 +180,8 @@ const EditForm = () => {
                 <Button
                   variant="contained"
                   fullWidth
-                  sx={{ bgcolor: getButtonColor("mcq") }}
-                  onClick={() => setSelectedType("mcq")}
+                  sx={{ bgcolor: getButtonColor("MULTIPLE_CHOICE") }}
+                  onClick={() => setSelectedType("MULTIPLE_CHOICE")}
                 >
                   MCQ
                 </Button>
@@ -175,8 +190,8 @@ const EditForm = () => {
                 <Button
                   variant="contained"
                   fullWidth
-                  sx={{ bgcolor: getButtonColor("rating") }}
-                  onClick={() => setSelectedType("rating")}
+                  sx={{ bgcolor: getButtonColor("RATING") }}
+                  onClick={() => setSelectedType("RATING")}
                 >
                   Rating
                 </Button>
@@ -185,8 +200,8 @@ const EditForm = () => {
                 <Button
                   variant="contained"
                   fullWidth
-                  sx={{ bgcolor: getButtonColor("date") }}
-                  onClick={() => setSelectedType("date")}
+                  sx={{ bgcolor: getButtonColor("DATE") }}
+                  onClick={() => setSelectedType("DATE")}
                 >
                   Date
                 </Button>
@@ -233,14 +248,14 @@ const EditForm = () => {
                     label="Required"
                   />
 
-                  {question.type === "mcq" && (
+                  {question.type === "MULTIPLE_CHOICE" && (
                     <FormControlLabel
                       control={<Checkbox checked={question.multipleSelect} onChange={() => handleToggleMultipleSelect(question.id, questions, setQuestions)} />}
                       label="Allow Multiple Select"
                     />
                   )}
 
-                  {question.type === "mcq" && (
+                  {question.type === "MULTIPLE_CHOICE" && (
                     <Box>
                       {question.options.map((option, index) => (
                         <Box key={index} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
@@ -261,13 +276,13 @@ const EditForm = () => {
                     </Box>
                   )}
 
-                  {question.type === "rating" && (
+                  {question.type === "RATING" && (
                     <Box sx={{ mt: 2 }}>
                       <Rating name={`rating-${question.id}`} value={question.ratingValue} disabled sx={{ color: "#FFD700" }} />
                     </Box>
                   )}
 
-                  {question.type === "date" && (
+                  {question.type === "DATE" && (
                     <Box sx={{ mt: 2 }}>
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DatePicker

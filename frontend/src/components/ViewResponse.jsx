@@ -3,13 +3,18 @@ import axios from 'axios';
 import FilledForm from './FilledForm';
 import { Button, Box } from '@mui/material';
 import FilledFormAnalysis from './FilledFormAnalysis';
+import { getAuthToken, serverUrl } from '../utils/BackendUtils';
 
 const ViewResponse = ({ id }) => {
   const [responses, setResponses] = useState([]);
   const [currentResponseIndex, setCurrentResponseIndex] = useState(0); // State to keep track of the current response index
 
   const fetchFormResponse = async () => {
-    const res = await axios.get("http://localhost:3000/responses/" + id);
+    const res = await axios.get(serverUrl + "get_submissions/" + id, {
+      headers: {
+            "Authorization": getAuthToken()
+          }
+    })
     console.log(res.data);
     setResponses(res.data);
   };

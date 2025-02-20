@@ -17,7 +17,7 @@ const App = () => {
         <Route path = "/" element = {<Dashboard />} />
         <Route path = "/create" element = {<CreateForm />} />
         <Route path = "/edit/:id" element = {<EditForm/>} />
-        <Route path = "/fillForm/:id" element = {<ResponseForm />} />
+        <Route path = "/fillform/:id" element = {<ResponseForm />} />
       </Routes>
       </BrowserRouter>
     </div>

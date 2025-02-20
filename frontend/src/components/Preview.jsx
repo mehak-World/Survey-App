@@ -34,7 +34,7 @@ const Preview = ({formTitle, formDescription, questions}) => {
     {questions.map((question) => (
       <Box key={question.id} sx={{ mb: 4 }}>
         <Typography variant="h6">{question.title}</Typography>
-        {question.type == "text" && (
+        {question.type == "TEXT" && (
             <Box>
                <TextField
                     variant="outlined"
@@ -44,7 +44,7 @@ const Preview = ({formTitle, formDescription, questions}) => {
                   />
             </Box>
         )}
-        {question.type === "mcq" && (
+        {question.type === "MULTIPLE_CHOICE" && (
           <Box>
             {question.options.map((option, index) => (
               <Box key={index}>
@@ -53,10 +53,10 @@ const Preview = ({formTitle, formDescription, questions}) => {
             ))}
           </Box>
         )}
-        {question.type === "rating" && (
+        {question.type === "RATING" && (
           <Rating value={question.ratingValue} disabled sx={{ color: "#FFD700" }} />
         )}
-        {question.type === "date" && (
+        {question.type === "DATE" && (
             <Box sx={{ mt: 2 }}>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DatePicker
