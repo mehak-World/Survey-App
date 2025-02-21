@@ -1,16 +1,13 @@
 import React from "react";
-import AppsIcon from "@mui/icons-material/Apps";
-import SearchIcon from "@mui/icons-material/Search";
-import { IconButton } from "@mui/material";
-import formimage from "../assets/images/forms-icon.png";
+import { IconButton, Button } from "@mui/material";
+import { useUser } from "../utils/UserContext";
 
 const Header = () => {
-  const handleInputChange = (value) => {
-    console.log("Search input:", value);
-  };
-
-  const username = localStorage.getItem("username");
-  console.log(username);
+  const { username, setUserName } = useUser();
+  
+  const handleClick = () => {
+    
+  }
 
   return (
     <div className="header" style={styles.header}>
@@ -20,30 +17,21 @@ const Header = () => {
         <p style={styles.title}>Forms</p>
       </div>
 
-      {/* Search Bar */}
-      <div style={styles.headerSearch}>
-        <SearchIcon style={styles.searchIcon} />
-        <input
-          type="text"
-          placeholder="Search"
-          onChange={(e) => handleInputChange(e.target.value)}
-          style={styles.searchInput}
-        />
-      </div>
+      
 
       {/* Right Section */}
-      <div style={styles.headerRight}>
-        {/* Apps Icon */}
-        <IconButton style={styles.iconButton}>
-          <AppsIcon style={styles.appsIcon} />
-        </IconButton>
+      {username &&  <div style={styles.headerRight}>
+     <Button variant="text" onClick = {handleClick}>
+              Logout
+      </Button>
 
         {/* Profile Button */}
         <div style={styles.profileButton}>
+        
           {/* Example: Using user initials */}
-          <span style={styles.profileInitials}>{username[0].toUpperCase()}</span>
+           <span style={styles.profileInitials}>{username && username.charAt(0).toUpperCase() /* username[0].toUpperCase() */}</span>
         </div>
-      </div>
+      </div>}
     </div>
   );
 };

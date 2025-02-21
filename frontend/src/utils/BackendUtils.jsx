@@ -7,7 +7,8 @@ export const getAuthToken = () => {
 export const setAuthHeader = (token) => {
     if (token !== null) {
       window.localStorage.setItem("auth_token", token);
-    } else {
+    } 
+    else {
       window.localStorage.removeItem("auth_token");
     }
 };

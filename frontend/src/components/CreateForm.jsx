@@ -21,10 +21,14 @@ import {AddPhotoAlternate} from "@mui/icons-material"
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import { handleAddOption, handleAddQuestion, handleEditOption, handleEditTitle, handleRemoveOption, handleRemoveQuestion, handleToggleMultipleSelect, handleToggleRequired } from "../utils/questionUtils";
+import { handleAddOption, handleAddQuestion, handleEditOption, handleEditTitle, handleRemoveOption,
+  handleRemoveQuestion, handleToggleMultipleSelect, handleToggleRequired, convertAllToQuestionDtos } from "../utils/questionUtils";
 import Preview from "./Preview";
 import { handleImageChange } from "../utils/imageUtils";
 import {useNavigate} from "react-router-dom"
+import { serverUrl } from "../utils/BackendUtils";
+import {getAuthToken} from '../utils/BackendUtils';
+
 
 const CreateForm = () => {
   const [activeTab, setActiveTab] = useState("edit");
@@ -44,14 +48,21 @@ const CreateForm = () => {
   };
 
   const saveForm = async () => {
-          const response = await axios.post("http://localhost:3000/forms", {
-            title: formTitle,
-            description: formDescription,
-            questions:questions
-          })
-          if(response){
-            navigate("/")
-          }
+
+    const questionDtos = convertAllToQuestionDtos(questions);
+
+    const response = await axios.post(serverUrl + "createform", {
+      title: formTitle,
+      description: formDescription,
+      questions: questionDtos
+    }, {
+      headers: {
+        "Authorization": getAuthToken()
+      }
+    })
+    if(response){
+      navigate("/")
+    }
   }
 
   return (
@@ -94,8 +105,8 @@ const CreateForm = () => {
                 <Button
                   variant="contained"
                   fullWidth
-                  sx={{ bgcolor: getButtonColor("text") }}
-                  onClick={() => setSelectedType("text")}
+                  sx={{ bgcolor: getButtonColor("TEXT") }}
+                  onClick={() => setSelectedType("TEXT")}
                 >
                   Text
                 </Button>
@@ -104,8 +115,8 @@ const CreateForm = () => {
                 <Button
                   variant="contained"
                   fullWidth
-                  sx={{ bgcolor: getButtonColor("mcq") }}
-                  onClick={() => setSelectedType("mcq")}
+                  sx={{ bgcolor: getButtonColor("MULTIPLE_CHOICE") }}
+                  onClick={() => setSelectedType("MULTIPLE_CHOICE")}
                 >
                   MCQ
                 </Button>
@@ -114,8 +125,8 @@ const CreateForm = () => {
                 <Button
                   variant="contained"
                   fullWidth
-                  sx={{ bgcolor: getButtonColor("rating") }}
-                  onClick={() => setSelectedType("rating")}
+                  sx={{ bgcolor: getButtonColor("RATING") }}
+                  onClick={() => setSelectedType("RATING")}
                 >
                   Rating
                 </Button>
@@ -124,8 +135,8 @@ const CreateForm = () => {
                 <Button
                   variant="contained"
                   fullWidth
-                  sx={{ bgcolor: getButtonColor("date") }}
-                  onClick={() => setSelectedType("date")}
+                  sx={{ bgcolor: getButtonColor("DATE") }}
+                  onClick={() => setSelectedType("DATE")}
                 >
                   Date
                 </Button>
@@ -142,33 +153,33 @@ const CreateForm = () => {
               {questions.map((question) => (
                 <Box key={question.id} sx={{ mb: 4 }}>
 
-                    <div style = {{display: "flex", gap: "10px", alignItems: "center"}}>   {/* Question Title */}
-                  <TextField
-                    fullWidth
-                    variant="outlined"
-                    value={question.title}
-                    onChange={(e) => handleEditTitle(question.id, e.target.value, questions, setQuestions)}
-                    sx={{ mb: 2 }}
-                  />
+                  <div style = {{display: "flex", gap: "10px", alignItems: "center"}}>   {/* Question Title */}
+                    <TextField
+                      fullWidth
+                      variant="outlined"
+                      value={question.title}
+                      onChange={(e) => handleEditTitle(question.id, e.target.value, questions, setQuestions)}
+                      sx={{ mb: 2 }}
+                    />
 
-<Box sx={{ mt: 2 }}>
-                    <Button variant="contained" component="label" >
-                        <AddPhotoAlternate/>
-                    
-                      <input
-                        type="file"
-                        accept="image/*"
-                        hidden
-                        multiple
-                        onChange={(e) => handleImageChange(question.id, e, questions, setQuestions)}
-                      />
-                    </Button>
-                    <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-                      {question.images.length} images uploaded
-                    </Typography>
-                  </Box>
+                    <Box sx={{ mt: 2 }}>
+                      <Button variant="contained" component="label" >
+                          <AddPhotoAlternate/>
+                      
+                        <input
+                          type="file"
+                          accept="image/*"
+                          hidden
+                          multiple
+                          onChange={(e) => handleImageChange(question.id, e, questions, setQuestions)}
+                        />
+                      </Button>
+                      <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+                        {question.images.length} images uploaded
+                      </Typography>
+                    </Box>
 
-                    </div>
+                  </div>
                
 
                   {/* Required Toggle */}
@@ -178,7 +189,7 @@ const CreateForm = () => {
                   />
 
                   {/* Multiple Select Toggle (only for MCQ) */}
-                  {question.type === "mcq" && (
+                  {question.type === "MULTIPLE_CHOICE" && (
                     <FormControlLabel
                       control={
                         <Checkbox checked={question.multipleSelect} onChange={() => handleToggleMultipleSelect(question.id, questions, setQuestions)} />
@@ -188,7 +199,7 @@ const CreateForm = () => {
                   )}
 
                   {/* Options for MCQ */}
-                  {question.type === "mcq" && (
+                  {question.type === "MULTIPLE_CHOICE" && (
                     <Box>
                       {question.options.map((option, index) => (
                         <Box key={index} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
@@ -210,7 +221,7 @@ const CreateForm = () => {
                   )}
 
                   {/* Rating Question */}
-                  {question.type === "rating" && (
+                  {question.type === "RATING" && (
                     <Box sx={{ mt: 2 }}>
                       <Rating
                         name={`rating-${question.id}`}
@@ -222,7 +233,7 @@ const CreateForm = () => {
                   )}
 
                   {/* Date Question */}
-                  {question.type === "date" && (
+                  {question.type === "DATE" && (
                     <Box sx={{ mt: 2 }}>
                       <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <DatePicker

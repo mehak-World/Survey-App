@@ -12,6 +12,8 @@ import {
   Checkbox,
   IconButton,
   InputAdornment,
+  RadioGroup,
+  Radio,
   Rating,
   Input,
 } from "@mui/material";
@@ -20,8 +22,9 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 
 const Preview = ({formTitle, formDescription, questions}) => {
+ 
   return (
-    <Box>
+    <Box  >
     {/* Preview Mode */}
     <Typography variant="h5" sx={{ mb: 3 }}>
       {formTitle || "Untitled Form"}
@@ -30,52 +33,89 @@ const Preview = ({formTitle, formDescription, questions}) => {
       {formDescription || "No description provided."}
     </Typography>
 
-    {/* Display Questions */}
-    {questions.map((question) => (
-      <Box key={question.id} sx={{ mb: 4 }}>
-        <Typography variant="h6">{question.title}</Typography>
-        {question.type == "text" && (
-            <Box>
-               <TextField
+     {/* Display Questions */}
+     <Box >
+     {questions?.map((question) => (
+              <Box key={question._id} sx={{ mb: 3 }}>
+                <Typography variant="h6" >
+                  {question.title}
+                  {question.required && <span style={{ color: "red" }}> *</span>}
+                </Typography>
+    
+                {/* MCQ - Show Multi-Select Label */}
+                {question.type === "MULTIPLE_CHOICE" && question.multipleSelect && (
+                  <Typography variant="body2" color="textSecondary">
+                    (Multiple selections allowed)
+                  </Typography>
+                )}
+    
+                {/* Text Input */}
+                {question.type === "TEXT" && (
+                  <TextField
                     variant="outlined"
-                    placeholder = "Enter your answer"
-                   disabled
+                    placeholder="Enter your answer"
                     fullWidth
+                    disabled
                   />
-            </Box>
-        )}
-        {question.type === "mcq" && (
-          <Box>
-            {question.options.map((option, index) => (
-              <Box key={index}>
-                <FormControlLabel control={<Checkbox />} label={option} />
+                )}
+    
+                {/* MCQ (Single & Multiple Select) */}
+                {question.type === "MULTIPLE_CHOICE" && (
+                  <Box>
+                    {question.multipleSelect ? (
+                      // Multiple select (checkboxes)
+                      question.options.map((option, index) => (
+                        <Box key={index}>
+                          <FormControlLabel
+                            control={
+                              <Checkbox disabled
+                              />
+                            }
+                            label={option}
+                          />
+                        </Box>
+                      ))
+                    ) : (
+                      // Single select (radio buttons)
+                      <RadioGroup disabled
+                      >
+                        {question.options.map((option, index) => (
+                          <FormControlLabel key={index} value={option} control={<Radio />} label={option} disabled/>
+                        ))}
+                      </RadioGroup>
+                    )}
+                  </Box>
+                )}
+    
+                {/* Rating Input */}
+                {question.type === "RATING" && (
+                  <Rating
+                  
+                    disabled
+                    sx={{ color: "#FFD700" }}
+                  />
+                )}
+    
+                {/* Date Picker */}
+                {question.type === "DATE" && (
+                  <Box sx={{ mt: 2 }}>
+                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                      <DatePicker disabled
+                        label="Select Date"
+                        renderInput={(params) => <TextField {...params} fullWidth />}
+                      />
+                    </LocalizationProvider>
+                  </Box>
+                )}
               </Box>
             ))}
-          </Box>
-        )}
-        {question.type === "rating" && (
-          <Rating value={question.ratingValue} disabled sx={{ color: "#FFD700" }} />
-        )}
-        {question.type === "date" && (
-            <Box sx={{ mt: 2 }}>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DatePicker
-                  label="Select Date"
-                  value={question.date}
-                  renderInput={(params) => <TextField {...params} fullWidth />}
-                  disabled="true"
-                />
-              </LocalizationProvider>
-            </Box>)}
-        {question.images.length > 0 && (
-          <Box>
-            {question.images.map((img, index) => (
-              <img key={index} src={URL.createObjectURL(img)} alt={`Image ${index + 1}`} style={{ width: 100, height: 100, marginRight: 8 }} />
-            ))}
-          </Box>
-        )}
-      </Box>
-    ))}
+    
+            {/* Submit Button */}
+            <Button variant="contained" disabled>
+              Submit response
+            </Button>
+     </Box>
+          
   </Box>
   )
 }

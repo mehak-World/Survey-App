@@ -16,9 +16,15 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import axios from "axios";
+import { serverUrl } from "../utils/BackendUtils";
+import { getAuthToken } from "../utils/BackendUtils";
+import { convertAllToQuestions } from "../utils/questionUtils";
 
 const ResponseForm = () => {
   const [form, setForm] = useState({});
+
+  // Response types can include: string (text, single-choice mcq), [string] (multi-choice mcq), number (rating), 
+  // Date? (Date)
   const [responses, setResponses] = useState({}); // Store user responses
   const [errors, setErrors] = useState({}); // Store validation errors
   const [submitted, setSubmitted] = useState(false); // Track submission status
@@ -26,9 +32,17 @@ const ResponseForm = () => {
   const navigate = useNavigate();
 
   const fetchData = async () => {
-    const response = await axios.get("http://localhost:3000/forms/" + id);
+    const response = await axios.get(serverUrl + "forms/" + id, {
+          headers: {
+            "Authorization": getAuthToken()
+          }
+        });
     if (response) {
-      setForm(response.data);
+      const formData = response.data
+      formData.questions = convertAllToQuestions(response.data.questions);
+
+      console.log(formData)
+      setForm(formData);
     }
   };
 
@@ -47,7 +61,7 @@ const ResponseForm = () => {
     // Validation: Check required questions
     let newErrors = {};
     form.questions.forEach((question) => {
-      if (question.isRequired && !responses[question._id]) {
+      if (question.required && !responses[question._id]) {
         newErrors[question._id] = true; // Mark as error
       }
     });
@@ -58,16 +72,19 @@ const ResponseForm = () => {
       return; // Stop submission if errors exist
     }
 
-    const submission = {
-      formId: form._id,
+    const submissionDto = {
+      formId: id,
       answers: form.questions.map((question) => ({
         questionId: question._id,
         response: responses[question._id] ?? "", // Store empty string if unanswered
       })),
+      respondedAt: new Date()
     };
 
+    console.log(submissionDto)
+
     try {
-      await axios.post("http://localhost:3000/responses", submission);
+      await axios.post(serverUrl + "response", submissionDto);
       setSubmitted(true); // Show thank-you message after successful submission
     } catch (error) {
       console.error("Error submitting response", error);
@@ -101,18 +118,18 @@ const ResponseForm = () => {
           <Box key={question._id} sx={{ mb: 4, border: errors[question._id] ? "2px solid red" : "none", p: 2 }}>
             <Typography variant="h6">
               {question.title}
-              {question.isRequired && <span style={{ color: "red" }}> *</span>}
+              {question.required && <span style={{ color: "red" }}> *</span>}
             </Typography>
 
             {/* MCQ - Show Multi-Select Label */}
-            {question.type === "mcq" && question.isMultiple && (
+            {question.type === "MULTIPLE_CHOICE" && question.multipleSelect && (
               <Typography variant="body2" color="textSecondary">
                 (Multiple selections allowed)
               </Typography>
             )}
 
             {/* Text Input */}
-            {question.type === "text" && (
+            {question.type === "TEXT" && (
               <TextField
                 variant="outlined"
                 placeholder="Enter your answer"
@@ -123,9 +140,9 @@ const ResponseForm = () => {
             )}
 
             {/* MCQ (Single & Multiple Select) */}
-            {question.type === "mcq" && (
+            {question.type === "MULTIPLE_CHOICE" && (
               <Box>
-                {question.isMultiple ? (
+                {question.multipleSelect ? (
                   // Multiple select (checkboxes)
                   question.options.map((option, index) => (
                     <Box key={index}>
@@ -165,7 +182,7 @@ const ResponseForm = () => {
             )}
 
             {/* Rating Input */}
-            {question.type === "rating" && (
+            {question.type === "RATING" && (
               <Rating
                 value={responses[question._id] || 0}
                 onChange={(e, newValue) => handleResponseChange(question._id, newValue)}
@@ -174,7 +191,7 @@ const ResponseForm = () => {
             )}
 
             {/* Date Picker */}
-            {question.type === "date" && (
+            {question.type === "DATE" && (
               <Box sx={{ mt: 2 }}>
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker

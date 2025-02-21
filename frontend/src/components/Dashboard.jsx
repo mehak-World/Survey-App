@@ -1,20 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { IconButton, Menu, MenuItem } from "@mui/material";
-import MoreVertIcon from "@mui/icons-material/MoreVert"; // For three vertical dots
+import MoreVertIcon from "@mui/icons-material/MoreVert"; 
 import createImg from "../assets/images/forms-blank-googlecolors.png";
 import surveyImg from "../assets/images/t-shirt.png";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { getAuthToken, serverUrl } from "../utils/BackendUtils";
+import { useUser } from "../utils/UserContext";
 
 const Dashboard = () => {
   const [forms, setForms] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
   const [selectedSurvey, setSelectedSurvey] = useState(null);
   const navigate = useNavigate();
+  const {username} = useUser();
 
   useEffect(() => {
+    if(!username){
+      navigate("/login");
+    }
     const getForms = async () => {
-      const response = await axios.get("http://localhost:3000/forms");
+      const response = await axios.get(serverUrl + "getuserforms", {
+        'headers': {
+          'Authorization': getAuthToken()
+        }
+      });
+      
       if (response) {
         setForms(response.data);
       }
@@ -41,7 +52,11 @@ const Dashboard = () => {
 
   const handleDelete = async () => {
     console.log(`Delete survey with ID: ${selectedSurvey}`);
-    const response = await axios.post("http://localhost:3000/forms/" + selectedSurvey + "/delete");
+    const response = await axios.delete(serverUrl + "deleteform/" + selectedSurvey, {
+      'headers': {
+        'Authorization': getAuthToken()
+      }
+    });
     if(response){
       setForms(forms.filter((survey) => survey._id !== selectedSurvey));
     }

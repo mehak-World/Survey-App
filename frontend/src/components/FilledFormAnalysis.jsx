@@ -3,42 +3,53 @@ import { PieChart, Pie, Cell, Tooltip, Legend, BarChart, Bar, XAxis, YAxis, Cart
 import { Box, Typography } from "@mui/material";
 import axios from "axios";
 import ReactWordcloud from "react-wordcloud"; // Import the WordCloud component
+import { getAuthToken, serverUrl } from "../utils/BackendUtils";
 
 
 // Fixed set of 10 colors for consistency
 const COLORS = ["#8884d8", "#82ca9d", "#FFBB28", "#FF8042", "#FF4567", "#0088FE", "#00C49F", "#AF19FF", "#FF6666", "#33FF57"];
 
 const FilledFormAnalysis = ({id}) => {
-  const [responses, setResponses] = useState([]);
+  let responses;
+  //const [responses, setResponses] = useState([]);
   const [mcqData, setMcqData] = useState([]);
   const [ratingData, setRatingData] = useState([]);
   const [wordCloudData, setWordCloudData] = useState({});
 
   const fetchFormResponse = async () => {
-    const res = await axios.get("http://localhost:3000/responses/" + id);
+    const res = await axios.get(serverUrl + "get_submissions/" + id, {
+      'headers': {
+        'Authorization': getAuthToken()
+      }
+    });
     console.log(res.data);
-    setResponses(res.data);
-  };
+    responses = res.data;
+    //setResponses(res.data);
 
-  useEffect(() => {
-    fetchFormResponse();
     processMCQData();
     processRatingData();
     processWordCloudData();
-  }, [responses]);
+  };
+
+  useEffect(() => {
+    console.log("Using effect!")
+    fetchFormResponse();
+    
+  }, [id/*responses*/]);
 
   const processMCQData = () => {
+    console.log('Prcessing mcq data: ' + responses)
     const questionAnalysis = {};
 
     responses.forEach((response) => {
       response.answers.forEach((answer) => {
-        if (answer?.questionId?.type === "mcq") {
-          const questionTitle = answer.questionId.title;
+        if (answer?.question?.type === "MULTIPLE_CHOICE") {
+          const questionTitle = answer.question.title;
           if (!questionAnalysis[questionTitle]) {
             questionAnalysis[questionTitle] = {};
           }
 
-          answer.questionId.options.forEach((option) => {
+          answer.question.options.forEach((option) => {
             if (!questionAnalysis[questionTitle][option]) {
               questionAnalysis[questionTitle][option] = 0;
             }
@@ -63,12 +74,13 @@ const FilledFormAnalysis = ({id}) => {
   };
 
   const processRatingData = () => {
+    console.log('Prcessing rating data: ' + responses)
     const ratingAnalysis = {};
 
     responses.forEach((response) => {
       response.answers.forEach((answer) => {
-        if (answer?.questionId?.type === "rating") {
-          const questionTitle = answer.questionId.title;
+        if (answer?.question?.type === "RATING") {
+          const questionTitle = answer.question.title;
           if (!ratingAnalysis[questionTitle]) {
             ratingAnalysis[questionTitle] = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
           }
@@ -97,8 +109,8 @@ const FilledFormAnalysis = ({id}) => {
 
     responses.forEach((response) => {
       response.answers.forEach((answer) => {
-        if (answer?.questionId?.type === "text") { // Handle text questions
-          const questionTitle = answer.questionId.title;
+        if (answer?.question?.type === "TEXT") { // Handle text questions
+          const questionTitle = answer.question.title;
           if (!cloudData[questionTitle]) {
             cloudData[questionTitle] = [];
           }
