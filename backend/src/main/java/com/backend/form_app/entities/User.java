@@ -2,6 +2,7 @@ package com.backend.form_app.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,10 +18,10 @@ public class User {
     @Id
     private String id;
 
-    private String login;
-    private String email;
-    private String password;
-    private List<String> roles;
+    private final String login;
+    private final String email;
+    private final String password;
+    private final List<String> roles;
 
     public User(String login, String email, String password, List<String> roles) {
         this.login = login;
