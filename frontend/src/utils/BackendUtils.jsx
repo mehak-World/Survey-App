@@ -1,4 +1,4 @@
-export const serverUrl = "https://form-application-1-1.onrender.com/"
+export const serverUrl = "https://form-application-g2tj.onrender.com/"
 
 export const getAuthToken = () => {
     return "Bearer " + window.localStorage.getItem('auth_token');
