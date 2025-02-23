@@ -109,7 +109,7 @@ const EditForm = () => {
 
   // Function to generate the sharable link
   const handleGenerateLink = () => {
-    setGeneratedLink(`https://formapp-bwew.onrender.com/#/fillForm/${id}`);
+    setGeneratedLink(`https://formapp-15i4.onrender.com/#/fillForm/${id}`);
     setLinkModalOpen(true);
   };
 
