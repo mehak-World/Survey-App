@@ -1,5 +1,5 @@
-import React from 'react'
-import {BrowserRouter, Routes, Route} from "react-router-dom";
+import React from 'react';
+import { HashRouter as Router, Routes, Route } from "react-router-dom"; // Use HashRouter instead
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import CreateForm from './components/CreateForm';
@@ -12,20 +12,19 @@ const App = () => {
   return (
     <div>
       <UserProvider>
-          <BrowserRouter>
+        <Router>
           <Header />
           <Routes>
-            <Route path = "/login" element = {<Login />} />
-            <Route path = "/" element = {<Dashboard />} />
-            <Route path = "/create" element = {<CreateForm />} />
-            <Route path = "/edit/:id" element = {<EditForm/>} />
-            <Route path = "/fillform/:id" element = {<ResponseForm />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/create" element={<CreateForm />} />
+            <Route path="/edit/:id" element={<EditForm />} />
+            <Route path="/fillform/:id" element={<ResponseForm />} />
           </Routes>
-          </BrowserRouter>
+        </Router>
       </UserProvider>
-    
     </div>
-  )
+  );
 }
 
-export default App
+export default App;

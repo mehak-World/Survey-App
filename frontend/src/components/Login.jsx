@@ -42,7 +42,8 @@ const Login = () => {
         setAuthHeader(response.data.token);
         window.localStorage.setItem("username", username);
         setUserName(username);
-        navigate("/");
+        setIsSignUpForm(false);
+        navigate("/login");
       }
 
     

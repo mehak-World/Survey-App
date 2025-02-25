@@ -85,7 +85,7 @@ const Dashboard = () => {
           onMouseEnter={(e) => (e.target.style.transform = "scale(1.05)")}
           onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
         >
-          <a href="/create">
+          <a href="/#/create">
             <img
               src={createImg}
               alt="Create form"
