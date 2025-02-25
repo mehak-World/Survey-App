@@ -16,6 +16,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -57,6 +59,7 @@ public class AuthorizationService {
         );
 
         Authentication authentication = authenticationManager.authenticate(token);
+
         if (authentication.isAuthenticated()) {
             String jwToken = jwtService.createToken(credentialDto.login());
             return Optional.of(Map.of("token", jwToken));
@@ -70,10 +73,21 @@ public class AuthorizationService {
                 accountInfoDto.login(),
                 accountInfoDto.email(),
                 passwordEncoder.encode(accountInfoDto.password()),
-                List.of("USER")
+                List.of("USER"),
+                Instant.now().getEpochSecond()
         );
 
         userRepository.insert(signupUser);
+    }
+
+    public void handleLogout() {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        log.info("User logout: " + username);
+
+        User user = userRepository.findByLogin(username);
+        user.setLastLogout(Instant.now().getEpochSecond());
+
+        userRepository.save(user);
     }
 
 }

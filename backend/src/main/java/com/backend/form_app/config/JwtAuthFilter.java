@@ -49,10 +49,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                     log.info("Found user auth: " + auth);
                     SecurityContextHolder.getContext().setAuthentication(auth);
                 } catch (RuntimeException e) {
-                    //log.info("Error: " + e);
                     log.error("Filter runtime exception: " + e);
                     SecurityContextHolder.clearContext();
-                    //throw e;
 
                 }
             }

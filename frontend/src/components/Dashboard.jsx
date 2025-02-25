@@ -16,7 +16,7 @@ const Dashboard = () => {
   const {username} = useUser();
 
   useEffect(() => {
-    if(!username){
+    if(!username || !getAuthToken()){
       navigate("/login");
     }
     const getForms = async () => {

@@ -1,11 +1,41 @@
 import React from "react";
 import { IconButton, Button } from "@mui/material";
 import { useUser } from "../utils/UserContext";
+import { getAuthToken, serverUrl, setAuthHeader } from "../utils/BackendUtils";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const Header = () => {
   const { username, setUserName } = useUser();
+  const navigate = useNavigate();
   
-  const handleClick = () => {
+  const handleClick = async () => {
+    
+    await axios.get(serverUrl + "userlogout", {
+      'headers': {
+        'Authorization': getAuthToken()
+      }
+    }
+    ).then((response) => {
+      if (response.status == 200) {
+        console.log("Logout successfull");
+      } else if (response.status == 403) {
+        console.log("Unauthenticated");
+      } else {
+        console.log("Error occured with logging out")
+      }
+    }).catch((error) => {
+      if (error.response) {
+        console.log("Error occured with logging out")
+        console.log(error.response.data);
+        console.log(error.response.status);
+        console.log(error.response.headers);
+      }
+    });
+
+    setUserName(null);
+    setAuthHeader(null);
+    navigate("/login");
     
   }
 
