@@ -37,34 +37,31 @@ const Login = () => {
               password: password,
         })
 
-      console.log(response);
-      if (response.status == 200) {
+        console.log(response);
+        if (response.status !== 200) {
+          return
+        }
+
         setAuthHeader(response.data.token);
         window.localStorage.setItem("username", username);
-        setUserName(username);
         setIsSignUpForm(false);
-        navigate("/login");
-      }
-
     
       } 
 
-      else{
-        response = await  axios
-        .post(serverUrl + "login", {
-              login: username,
-              password: password,
-        })
+      response = await  axios
+      .post(serverUrl + "login", {
+            login: username,
+            password: password,
+      })
 
       console.log(response);
-      if (response.status == 200) {
+      if (response.status === 200) {
         setAuthHeader(response.data.token);
         window.localStorage.setItem("username", username);
         setUserName(username);
         navigate("/");
       }
-     
-      }
+
       setIsLoading(false);
     } catch (error) {
       setIsLoading(false);
