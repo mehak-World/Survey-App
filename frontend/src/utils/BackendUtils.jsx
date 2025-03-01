@@ -1,4 +1,4 @@
-export const serverUrl = import.meta.env.REACT_APP_SERVER_URL || 'http://localhost:8080/';
+export const serverUrl = import.meta.env.VITE_API_BACKEND_URL// || 'http://localhost:8080/';
 
 export const getAuthToken = () => {
     return "Bearer " + window.localStorage.getItem('auth_token');

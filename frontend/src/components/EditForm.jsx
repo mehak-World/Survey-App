@@ -109,7 +109,7 @@ const EditForm = () => {
 
   // Function to generate the sharable link
   const handleGenerateLink = () => {
-    setGeneratedLink(`https://formapp-15i4.onrender.com/#/fillForm/${id}`);
+    setGeneratedLink((import.meta.env.VITE_API_FRONTEND_URL || 'http://localhost:5173/') + `#/fillForm/${id}`);
     setLinkModalOpen(true);
   };
 

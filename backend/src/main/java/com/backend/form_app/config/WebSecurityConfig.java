@@ -41,8 +41,6 @@ public class WebSecurityConfig {
                 //        .loginPage("/login")
                 //        .permitAll())
                 .cors(c -> c.configurationSource(corsConfigurationSource()))
-                .logout((logout) -> logout
-                        .permitAll())
                 .addFilterBefore(new JwtAuthFilter(jwtService), BasicAuthenticationFilter.class)
                 .csrf(csrf -> csrf.disable());
                 //.cors(cors -> cors.configurationSource(corsConfigurationSource()));
